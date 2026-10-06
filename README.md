@@ -1,29 +1,35 @@
 # Family Secret Santa
 
-A tiny web app for running a Secret Santa draw. It works on any phone or computer, with nothing to install.
+A small web app for running a Secret Santa draw. Everyone adds their own name and wish list, the organizer runs the draw, and each person sees who they drew along with that person's wish list.
 
-How it works
-The organizer enters everyone's names and any pairs who shouldn't draw each other.
-The app runs the draw in the browser and creates one private link per person.
-Each person opens their own link, taps Show who I drew, and sees who they're buying for.
+It is a static page (`index.html`) hosted on GitHub Pages, with a free Firebase Firestore database storing names, wish lists and the draw.
 
-There is no server and no database. Each person's match is encoded inside their link, so nothing is stored anywhere.
+## Setup
 
-# Run it yourself
-Create a public GitHub repository.
-Upload index.html and this README.
-Go to Settings → Pages, set the source to Deploy from a branch, choose main and / (root), then save.
-After a minute or two, your app is live at https://<your-username>.github.io/<repo-name>/.
+1. Create a Firebase project and a Firestore database, then paste the web app config into `FIREBASE_CONFIG` in `index.html`.
+2. Set `ORGANIZER_CODE` in `index.html` to a code only you know.
+3. In Firestore **Rules**, allow reads and writes (see below) and publish.
+4. Upload `index.html` to a public GitHub repo and enable **Settings → Pages** (deploy from `main`, `/ (root)`).
 
-# Using it
-Open the live address, add names (one per line), and add optional exclusions as Name, Name pairs.
-Click Run the draw, then copy each person's link and send it to them privately.
-Organizers: don't open your own link if you want to be surprised.
-Run the draw only once. Running it again creates new links, and the old ones will still work.
-Privacy
+Firestore rules for a small, trusted group:
 
-Links hide the match from casual viewing, but they are encoded rather than encrypted. Anyone who knows how to decode a link could read it. That's fine for a family gift exchange, but not for anything sensitive.
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
 
-# Files
-index.html: the whole app (HTML, CSS and JavaScript in one file)
-README.md: this file
+## Using it
+
+- **Join:** enter your name, a 4-digit PIN and your wish list. Use the same name and PIN to edit later.
+- **Organizer:** unlock with the organizer code, add optional "don't draw each other" pairs, and run the draw once everyone has joined.
+- **My match:** pick your name, enter your PIN, and see who you're buying for.
+
+## Privacy
+
+PINs and wish lists are stored as plain text and the database is open to anyone with the site's config. That is fine for a family gift exchange, but don't use it for anything sensitive. Anyone technical could read the draw, and so could the organizer.
