@@ -3,48 +3,72 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#1f4d3a">
+<meta name="theme-color" content="#0d2b22">
 <meta name="apple-mobile-web-app-title" content="Secret Santa">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Family Secret Santa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f3ee;--ink:#1d2b24;--pine:#1f4d3a;--berry:#a3213a;--card:#fff;--line:#d9d3c7}
-@media(prefers-color-scheme:dark){:root{--bg:#14201a;--ink:#f1ede4;--pine:#6fbf95;--berry:#e8788d;--card:#1d2d25;--line:#33473c}}
+:root{--spruce:#0d2b22;--panel:rgba(255,255,255,.07);--line:rgba(255,255,255,.18);--snow:#f4f7f5;--mute:#b3c9bd;--berry:#c8142f;--gold:#f3c969;--bad:#ff9fae}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
-main{max-width:560px;margin:0 auto;padding:32px 20px 64px}
-h1{font:800 2.4rem/1.1 Fraunces,Georgia,serif;color:var(--pine);margin:0 0 8px}
-p{margin:0 0 16px}
+html{color-scheme:dark}
+body{margin:0;color:var(--snow);font:16px/1.55 Inter,system-ui,sans-serif;background-color:var(--spruce);
+background-image:radial-gradient(2px 2px at 20px 30px,rgba(255,255,255,.55),transparent),radial-gradient(1.5px 1.5px at 95px 85px,rgba(255,255,255,.4),transparent),radial-gradient(2px 2px at 150px 140px,rgba(255,255,255,.5),transparent),radial-gradient(900px 500px at 50% -8%,#1e6048,transparent 65%);
+background-size:180px 180px,180px 180px,180px 180px,auto;background-repeat:repeat,repeat,repeat,no-repeat}
+main{max-width:520px;margin:0 auto;padding:0 18px 56px;padding-top:env(safe-area-inset-top,0px)}
+.garland{display:block;width:calc(100% + 36px);margin:0 -18px;height:44px}
+header{text-align:center;padding:10px 0 22px}
+h1{font:800 clamp(2.2rem,9vw,3rem)/1.05 Fraunces,Georgia,serif;margin:0 0 8px;letter-spacing:-.01em}
+header p{margin:0 auto;max-width:34ch;color:var(--mute)}
+nav{display:flex;gap:4px;padding:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;margin-bottom:16px}
+nav button{flex:1;margin:0;padding:10px 6px;border:0;border-radius:999px;background:transparent;color:var(--mute);font:600 .95rem Inter,sans-serif;cursor:pointer}
+nav button.on{background:var(--berry);color:#fff}
+section{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:6px 22px 24px;backdrop-filter:blur(6px)}
 label{display:block;font-weight:600;margin:18px 0 6px}
-small{display:block;opacity:.7;margin-top:4px}
-input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
-textarea{min-height:110px}
-button{font:600 1rem Inter,sans-serif;border:0;border-radius:8px;padding:12px 18px;background:var(--pine);color:#fff;cursor:pointer;margin-top:16px}
-button.alt{background:transparent;color:var(--pine);border:1px solid var(--pine)}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
-nav{display:flex;gap:8px;margin:20px 0 4px}
-nav button{margin:0;flex:1;padding:10px 6px}
-nav button.on{background:var(--pine);color:#fff}
-.msg{font-weight:600;margin-top:12px;min-height:1.5em}
-.msg.bad{color:var(--berry)}
-.gift{background:var(--pine);color:#fff;border-radius:14px;padding:32px 24px;margin-top:24px;text-align:center}
-.gift .name{font:800 2.4rem Fraunces,Georgia,serif;margin:8px 0 16px}
-.gift .wish{white-space:pre-wrap;text-align:left;background:rgba(255,255,255,.12);border-radius:8px;padding:12px}
+small{display:block;color:var(--mute);margin-top:6px}
+input,select,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.3);color:var(--snow);font:inherit}
+select option{background:#14382c;color:#fff}
+textarea{min-height:110px;resize:vertical}
+::placeholder{color:#7f9c8e}
+button.cta{margin-top:20px;width:100%;padding:14px 18px;border:0;border-radius:12px;background:var(--berry);color:#fff;font:600 1rem Inter,sans-serif;cursor:pointer}
+button.cta.alt{background:transparent;color:var(--gold);border:1px solid var(--gold);margin-top:10px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.msg{font-weight:600;margin-top:14px;min-height:1.5em;color:var(--gold)}
+.msg.bad{color:var(--bad)}
 .hidden{display:none}
+.gift{position:relative;overflow:hidden;margin-top:22px;padding:34px 22px;border-radius:18px;text-align:center;color:#0d2b22;background:linear-gradient(165deg,#ffffff,#e4ede8)}
+.gift .for{font-weight:600;color:#3b5a4b}
+.gift .name{font:800 2.5rem/1.1 Fraunces,Georgia,serif;color:var(--berry);margin:6px 0 18px;overflow-wrap:anywhere}
+.gift .wish{white-space:pre-wrap;text-align:left;background:#fbf3dc;border-radius:12px;padding:14px;color:#3a2f10}
+.gift::before,.gift::after{content:"";position:absolute;background:var(--berry);z-index:2}
+.gift::before{left:0;right:0;top:50%;height:38px;margin-top:-19px;animation:slideH 1s .3s ease-in forwards}
+.gift::after{top:0;bottom:0;left:50%;width:38px;margin-left:-19px;animation:slideV 1s .3s ease-in forwards}
+.gift>*{animation:pop .6s .95s both}
+@keyframes slideH{to{transform:translateX(105%)}}
+@keyframes slideV{to{transform:translateY(-105%)}}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.gift::before,.gift::after{display:none}.gift>*{animation:none}}
 </style>
 </head>
 <body>
 <main>
-<h1>Family Secret Santa</h1>
-<p>Add your name and wish list, then come back after the draw to see who you got.</p>
+<svg class="garland" viewBox="0 0 560 44" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+  <path d="M0 6Q47 34 93 6Q140 34 187 6Q233 34 280 6Q327 34 373 6Q420 34 467 6Q513 34 560 6" fill="none" stroke="#3f7a62" stroke-width="2"/>
+  <g stroke="#3f7a62" stroke-width="2"><path d="M47 20v5M140 20v5M233 20v5M327 20v5M420 20v5M513 20v5"/></g>
+  <circle cx="47" cy="31" r="6" fill="#c8142f"/><circle cx="140" cy="31" r="6" fill="#f3c969"/><circle cx="233" cy="31" r="6" fill="#f4f7f5"/>
+  <circle cx="327" cy="31" r="6" fill="#c8142f"/><circle cx="420" cy="31" r="6" fill="#f3c969"/><circle cx="513" cy="31" r="6" fill="#f4f7f5"/>
+</svg>
+<header>
+  <h1>Family Secret Santa</h1>
+  <p>Add your name and wish list. After the draw, see who you're shopping for.</p>
+</header>
 <nav>
   <button class="on" data-tab="join">Join</button>
-  <button class="alt" data-tab="match">My match</button>
-  <button class="alt" data-tab="org">Organizer</button>
+  <button data-tab="match">My match</button>
+  <button data-tab="org">Organizer</button>
 </nav>
 
 <section id="join">
@@ -52,17 +76,17 @@ nav button.on{background:var(--pine);color:#fff}
   <label for="jp">4-digit PIN</label><input id="jp" inputmode="numeric" maxlength="4" autocomplete="off">
   <small>You'll need this PIN to see your match or edit your wish list.</small>
   <label for="jw">Gift ideas and wish list</label><textarea id="jw" placeholder="Sizes, favourite things, anything you'd love"></textarea>
-  <button id="joinBtn">Save my details</button>
+  <button class="cta" id="joinBtn">Save my details</button>
   <div class="msg" id="jm"></div>
 </section>
 
 <section id="match" class="hidden">
   <label for="ms">Who are you?</label><select id="ms"></select>
   <label for="mp">Your PIN</label><input id="mp" inputmode="numeric" maxlength="4" autocomplete="off">
-  <button id="seeBtn">Show who I drew</button>
+  <button class="cta" id="seeBtn">Show who I drew</button>
   <div class="msg" id="mm"></div>
   <div id="gift" class="gift hidden">
-    <div>You're buying a gift for</div>
+    <div class="for">You're buying a gift for</div>
     <div class="name" id="gt"></div>
     <div class="wish" id="gw"></div>
   </div>
@@ -70,15 +94,15 @@ nav button.on{background:var(--pine);color:#fff}
 
 <section id="org" class="hidden">
   <label for="oc">Organizer code</label><input id="oc" type="password" autocomplete="off">
-  <button id="unlockBtn">Unlock</button>
+  <button class="cta" id="unlockBtn">Unlock</button>
   <div class="msg" id="om"></div>
   <div id="orgTools" class="hidden">
     <p id="count"></p>
     <label for="rules">Who shouldn't draw each other? (optional)</label>
     <textarea id="rules" placeholder="Anna, Ben&#10;Carla, David"></textarea>
     <small>One pair per line, separated by a comma. The rule works both ways.</small>
-    <button id="drawBtn">Run the draw</button>
-    <button id="resetBtn" class="alt">Reset the draw</button>
+    <button class="cta" id="drawBtn">Run the draw</button>
+    <button class="cta alt" id="resetBtn">Reset the draw</button>
   </div>
 </section>
 </main>
@@ -87,7 +111,7 @@ nav button.on{background:var(--pine);color:#fff}
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getFirestore,collection,doc,setDoc,getDoc,getDocs,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ===== EDIT THESE TWO THINGS ===== */
+/* ===== PASTE YOUR OWN VALUES OVER THESE TWO BLOCKS ===== */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBUyAC2SkqweOOKqctQDT-FO44J6wgDyig",
   authDomain: "family-secret-santa-816af.firebaseapp.com",
@@ -97,7 +121,7 @@ const FIREBASE_CONFIG = {
   appId: "1:819977069071:web:52905b31b2bac8082db97a"
 };
 const ORGANIZER_CODE = "MSHK98";
-/* ================================= */
+/* ======================================================= */
 
 const db = getFirestore(initializeApp(FIREBASE_CONFIG));
 const drawRef = doc(db, "meta", "draw");
@@ -107,7 +131,7 @@ const say = (id, text, bad) => { $(id).textContent = text; $(id).className = "ms
 const people = async () => (await getDocs(collection(db, "people"))).docs.map(d => ({id: d.id, ...d.data()}));
 
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
-  document.querySelectorAll("nav button").forEach(x => x.className = "alt");
+  document.querySelectorAll("nav button").forEach(x => x.className = "");
   b.className = "on";
   ["join", "match", "org"].forEach(s => $(s).classList.toggle("hidden", s !== b.dataset.tab));
   if (b.dataset.tab === "match") loadNames();
