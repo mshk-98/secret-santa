@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Family Secret Santa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ee;--ink:#1d2b24;--pine:#1f4d3a;--berry:#a3213a;--card:#fff;--line:#d9d3c7}
+@media(prefers-color-scheme:dark){:root{--bg:#14201a;--ink:#f1ede4;--pine:#6fbf95;--berry:#e8788d;--card:#1d2d25;--line:#33473c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
+main{max-width:560px;margin:0 auto;padding:32px 20px 64px}
+h1{font:800 2.4rem/1.1 Fraunces,Georgia,serif;color:var(--pine);margin:0 0 8px}
+p{margin:0 0 16px}
+label{display:block;font-weight:600;margin:20px 0 6px}
+small{display:block;opacity:.7;margin-top:4px}
+textarea{width:100%;min-height:130px;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+button{font:600 1rem Inter,sans-serif;border:0;border-radius:8px;padding:12px 18px;background:var(--pine);color:#fff;cursor:pointer}
+button.alt{background:transparent;color:var(--pine);border:1px solid var(--pine)}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+.err{color:var(--berry);font-weight:600}
+.gift{background:var(--pine);color:#fff;border-radius:14px;padding:40px 24px;text-align:center;margin-top:24px}
+.gift .name{font:800 2.6rem Fraunces,Georgia,serif;margin:12px 0 0}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+
+<section id="organizer">
+  <h1>Family Secret Santa</h1>
+  <p>Add everyone, run the draw, then send each person their private link.</p>
+  <label for="names">Names (one per line)</label>
+  <textarea id="names" placeholder="Anna&#10;Ben&#10;Carla&#10;David"></textarea>
+  <label for="rules">Who shouldn't draw each other? (optional)</label>
+  <textarea id="rules" placeholder="Anna, Ben&#10;Carla, David"></textarea>
+  <small>One pair per line, separated by a comma. The rule works both ways.</small>
+  <p id="msg" class="err"></p>
+  <button id="draw">Run the draw</button>
+  <div id="links" class="hidden">
+    <h2 style="font:600 1.4rem Fraunces,Georgia,serif;margin-top:32px">Private links</h2>
+    <p>Send each person only their own link. Don't open them yourself, or you'll see who you drew.</p>
+    <div id="list"></div>
+  </div>
+</section>
+
+<section id="reveal" class="hidden">
+  <h1>Secret Santa</h1>
+  <p>Hi <strong id="who"></strong>. Make sure no one is looking, then tap below.</p>
+  <button id="show">Show who I drew</button>
+  <div id="gift" class="gift hidden">
+    <div>You're buying a gift for</div>
+    <div class="name" id="target"></div>
+  </div>
+</section>
+
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const dec = s => JSON.parse(decodeURIComponent(escape(atob(s))));
+const key = (a, b) => [a, b].map(s => s.toLowerCase()).sort().join('|');
+
+function draw(names, banned) {
+  for (let t = 0; t < 2000; t++) {
+    const to = [...names];
+    for (let i = to.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [to[i], to[j]] = [to[j], to[i]];
+    }
+    if (names.every((n, i) => n !== to[i] && !banned.has(key(n, to[i])))) return to;
+  }
+  return null;
+}
+
+$('draw').onclick = () => {
+  const names = [...new Set($('names').value.split('\n').map(s => s.trim()).filter(Boolean))];
+  const banned = new Set($('rules').value.split('\n')
+    .map(l => l.split(',').map(s => s.trim()))
+    .filter(p => p.length === 2 && p[0] && p[1]).map(p => key(p[0], p[1])));
+  $('msg').textContent = '';
+  if (names.length < 3) { $('msg').textContent = 'Add at least 3 names.'; return; }
+  const to = draw(names, banned);
+  if (!to) { $('msg').textContent = 'No valid draw with those rules. Remove a rule and try again.'; return; }
+  const base = location.href.split('#')[0];
+  $('list').innerHTML = '';
+  names.forEach((n, i) => {
+    const link = base + '#' + enc({ f: n, t: to[i] });
+    const row = document.createElement('div');
+    row.className = 'row';
+    const label = document.createElement('span');
+    label.textContent = n;
+    const btn = document.createElement('button');
+    btn.className = 'alt';
+    btn.textContent = 'Copy link';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(link); btn.textContent = 'Copied'; }
+      catch { prompt('Copy this link:', link); }
+    };
+    row.append(label, btn);
+    $('list').append(row);
+  });
+  $('links').classList.remove('hidden');
+};
+
+if (location.hash.length > 1) {
+  try {
+    const d = dec(location.hash.slice(1));
+    $('organizer').classList.add('hidden');
+    $('reveal').classList.remove('hidden');
+    $('who').textContent = d.f;
+    $('show').onclick = () => {
+      $('target').textContent = d.t;
+      $('gift').classList.remove('hidden');
+      $('show').classList.add('hidden');
+    };
+  } catch { /* invalid link: show organizer page */ }
+}
+</script>
+</body>
+</html>
