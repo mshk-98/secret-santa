@@ -75,6 +75,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   <label for="jn">Your name</label><input id="jn" autocomplete="off">
   <label for="jp">4-digit PIN</label><input id="jp" inputmode="numeric" maxlength="4" autocomplete="off">
   <small>You'll need this PIN to see your match or edit your wish list.</small>
+  <button class="cta alt" id="loadBtn" type="button">Load my saved details</button>
   <label for="jw">Gift ideas and wish list</label><textarea id="jw" placeholder="Sizes, favourite things, anything you'd love"></textarea>
   <button class="cta" id="joinBtn">Save my details</button>
   <div class="msg" id="jm"></div>
@@ -159,6 +160,20 @@ $("joinBtn").onclick = async () => {
     await setDoc(ref, {name, pin, wish});
     say("jm", "Saved. You can come back to edit your wish list with the same name and PIN.");
   } catch (e) { say("jm", "Couldn't save. Check your connection and the Firebase setup.", true); }
+};
+
+$("loadBtn").onclick = async () => {
+  const name = $("jn").value.trim(), pin = $("jp").value.trim();
+  if (!name || !/^\d{4}$/.test(pin)) return say("jm", "Enter your name and PIN first.", true);
+  try {
+    const snap = await getDoc(doc(db, "people", slug(name)));
+    if (!snap.exists()) return say("jm", "No one has joined with that name yet.", true);
+    const d = snap.data();
+    if (d.pin !== pin) return say("jm", "Wrong PIN.", true);
+    $("jn").value = d.name;
+    $("jw").value = d.wish || "";
+    say("jm", "Loaded. Edit your wish list and press Save.");
+  } catch (e) { say("jm", "Couldn't load. Check your connection.", true); }
 };
 
 $("seeBtn").onclick = async () => {
